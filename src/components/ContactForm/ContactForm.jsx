@@ -4,7 +4,7 @@ import { BiUserPlus } from 'react-icons/bi';
 import { BsTelephonePlusFill } from 'react-icons/bs';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 import { FormBox, Button, Label, Input } from './ContactForm.styled';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getItems, addContacts } from 'redux/contactsSlice';
 
@@ -33,28 +33,25 @@ const ContactForm = () => {
         return;
     }
   };
-  useEffect(() => {
-    const contactFinder = contacts.find(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (contactFinder) {
-      Report.failure(`${name} is already in contacts`, 'sorry');
-      setName('');
-      setNumber('');
-    }
-  }, [name, number, contacts]);
 
   const handleSubmit = e => {
     e.preventDefault();
+    const contactFinder = contacts.find(
+      contact => contact.name.toLowerCase() === name.toLowerCase()
+    );
     const contact = {
       id: nanoid(),
       name,
       number,
     };
-    dispatch(addContacts(contact));
-    setName('');
-    setNumber('');
+    if (!contactFinder) {
+      dispatch(addContacts(contact));
+      setName('');
+      setNumber('');
+    }
+    if (contactFinder) {
+      Report.failure(`${name} is already in contacts`, 'sorry');
+    }
   };
 
   return (
